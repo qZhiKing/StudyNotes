@@ -11,5 +11,24 @@
  * @return {ListNode}
  */
 var mergeTwoLists = function (list1, list2) {
+  // 创建一个虚拟头节点
+  const dummy = new ListNode();
+  let curr = dummy;
 
+  // 遍历两个链表，选择较小的节点连接到新链表
+  while (list1 && list2) {
+    if (list1.val < list2.val) {
+      curr.next = list1;
+      list1 = list1.next;
+    } else {
+      curr.next = list2;
+      list2 = list2.next;
+    }
+    curr = curr.next;
+  }
+
+  // 连接剩余的节点
+  curr.next = list1 || list2;
+
+  return dummy.next;
 };
