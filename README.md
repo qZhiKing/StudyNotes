@@ -1,4 +1,4 @@
-# [刀仔的算法自学笔记](https://github.com/qZhiKing/StudyNotes.git)
+# [刀仔的自学笔记](https://github.com/qZhiKing/StudyNotes.git)
 
 ## 1. 算法
 
@@ -13,3 +13,5 @@
 ## 6. LogicFlow 篇
 
 ## 7. 工程化 篇
+
+## 8. 面试 篇

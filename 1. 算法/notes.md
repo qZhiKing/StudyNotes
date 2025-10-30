@@ -1230,3 +1230,35 @@ var decodeString = function (s) {
   return stack.join("");
 };
 ```
+
+### 9.4 每日温度
+
+给定一个整数数组  temperatures ，表示每天的温度，返回一个数组  answer ，其中  answer[i]  是指对于第 i 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用  0 来代替。
+
+```js
+var dailyTemperatures = function (temperatures) {
+  const n = temperatures.length;
+  const res = new Array(n).fill(0);
+  const stack = []; // 存储索引的单调栈
+  for (let i = 0; i < n; i++) {
+    while (
+      stack.length > 0 &&
+      temperatures[stack[stack.length - 1]] < temperatures[i]
+    ) {
+      const prevIndex = stack.pop();
+      res[prevIndex] = i - prevIndex;
+    }
+    stack.push(i);
+  }
+
+  return res;
+};
+```
+
+### 9.5. 柱状图中最大的矩形
+
+给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+```js
+var largestRectangleArea = function (heights) {};
+```
