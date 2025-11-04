@@ -1286,3 +1286,5 @@ var largestRectangleArea = function (heights) {
   return maxArea;
 };
 ```
+
+## 10. 堆

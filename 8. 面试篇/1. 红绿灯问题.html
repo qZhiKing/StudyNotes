@@ -1,0 +1,120 @@
+<!-- HTML：红绿灯可视化界面 -->
+<div class="traffic-light">
+  <div class="light red" id="redLight"></div>
+  <div class="light yellow" id="yellowLight"></div>
+  <div class="light green" id="greenLight"></div>
+</div>
+<button id="resetBtn">重置红绿灯</button>
+
+<style>
+  .traffic-light {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 80px;
+    margin: 20px;
+  }
+
+  .light {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #333;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+
+  .light.red.active {
+    background: #f00;
+    opacity: 1;
+  }
+
+  .light.yellow.active {
+    background: #ffeb3b;
+    opacity: 1;
+  }
+
+  .light.green.active {
+    background: #0f0;
+    opacity: 1;
+  }
+
+  button {
+    margin: 20px;
+    padding: 8px 16px;
+  }
+</style>
+
+<script>
+  class TrafficLightMachine {
+    constructor() {
+      // 1. 核心配置：状态、转换规则、时长（单位：ms）
+      this.config = {
+        // 状态转换规则：当前状态 → { 触发事件: 目标状态 }
+        transitions: {
+          red: { timeout: 'green' },
+          green: { timeout: 'yellow' },
+          yellow: { timeout: 'red' }
+        },
+        // 每个状态的时长
+        durations: { red: 3000, green: 2000, yellow: 1000 },
+        // DOM元素缓存
+        elements: {
+          red: document.getElementById('redLight'),
+          yellow: document.getElementById('yellowLight'),
+          green: document.getElementById('greenLight')
+        }
+      };
+
+      // 初始状态
+      this.currentState = 'red';
+      // 定时器实例（用于暂停/清除）
+      this.timer = null;
+    }
+
+    // 2. 核心方法：触发事件（此处仅需timeout事件）
+    trigger(event) {
+      // 获取当前状态的转换规则
+      const nextState = this.config.transitions[this.currentState][event];
+      if (!nextState) return; // 忽略无效事件
+
+      // 切换到下一个状态
+      this.switchState(nextState);
+    }
+
+    // 3. 状态切换逻辑（核心动作）
+    switchState(nextState) {
+      // 清除上一个状态的定时器
+      if (this.timer) clearTimeout(this.timer);
+
+      // 动作1：更新DOM样式（亮当前灯，灭其他灯）
+      Object.entries(this.config.elements).forEach(([state, el]) => {
+        el.classList.toggle('active', state === nextState);
+      });
+
+      // 动作2：更新当前状态
+      this.currentState = nextState;
+      console.log(`当前状态：${nextState}（时长：${this.config.durations[nextState]}ms）`);
+
+      // 动作3：启动当前状态的倒计时，结束后触发timeout事件
+      this.timer = setTimeout(() => {
+        this.trigger('timeout'); // 自动切换到下一个状态
+      }, this.config.durations[nextState]);
+    }
+
+    // 4. 辅助方法：重置红绿灯（回到初始状态）
+    reset() {
+      this.switchState('red');
+    }
+  }
+
+  // 初始化并启动红绿灯
+  const trafficLight = new TrafficLightMachine();
+  // 初始状态直接启动（红灯先亮）
+  trafficLight.switchState('red');
+
+  // 绑定重置按钮事件
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    trafficLight.reset();
+  });
+</script>
