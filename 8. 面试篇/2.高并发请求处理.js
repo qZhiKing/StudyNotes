@@ -1,21 +1,21 @@
 // 并发池工具函数（通用版）
 async function requestPool(tasks, maxConcurrency) {
   const results = [];
-  const executing = []; // 存储当前正在执行的请求
+  const executing = new Set(); // 使用 Set 便于删除操作
 
   for (const task of tasks) {
     // 创建请求Promise（task是返回Promise的请求函数）
-    const promise = Promise.resolve().then(() => task());
+    const promise = task();
     results.push(promise);
 
-    // 当并发数达到阈值，等待任意一个请求完成后再继续
-    if (executing.length >= maxConcurrency) {
-      const resolved = await Promise.race(executing);
-      executing.splice(executing.indexOf(resolved), 1);
-    }
+    // 用 wrapped 包装，完成后自动从 executing 中移除
+    const wrapped = promise.finally(() => executing.delete(wrapped));
+    executing.add(wrapped);
 
-    // 将当前请求加入“执行中”队列
-    executing.push(promise);
+    // 当并发数达到阈值，等待任意一个请求完成后再继续
+    if (executing.size >= maxConcurrency) {
+      await Promise.race(executing);
+    }
   }
 
   // 等待所有请求完成（无论成功失败）
